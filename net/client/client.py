@@ -1,6 +1,9 @@
 import typing as types
 import asyncio as aio
-import net.commons as commons
+import net.common as commons
+
+from events import EventEmitter
+from packets import incoming_packets, packet
 
 class Client(object):
     IN_BUF_THRESHOLD = 1024
@@ -14,6 +17,7 @@ class Client(object):
 
         self._listening: bool = False
         self._buffer: commons.ByteBuffer = commons.ByteBuffer()
+        self._eventemitter = EventEmitter()
 
     # methods
     def stop() -> None:
@@ -33,9 +37,11 @@ class Client(object):
             data = await reader.recv(self.IN_BUF_THRESHOLD)
             self.buffer.add_bytes(data)
             id = self.buffer.read_int(SignType.UNSIGNED)
-            
+            if (Packet := incoming_packets.get(id)) is not None:
+                self._eventemitter.emit('packet', Packet())
 
     # properties
+
     @property
     def reader() -> aio.StreamReader:
         return self._reader
@@ -48,3 +54,6 @@ class Client(object):
     def buffer() -> commons.ByteBuffer:
         return self._buffer
 
+    @property
+    def events() -> EventEmitter:
+        return self._eventemitter

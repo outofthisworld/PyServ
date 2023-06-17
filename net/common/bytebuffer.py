@@ -1,4 +1,4 @@
-import consts
+import net.common.consts as consts
 import typing
 
 T: typing.Type = typing.TypeVar('T')
@@ -6,9 +6,9 @@ byte = int
 short = int
 
 class ByteBuffer(object):
-    def __init__(self, buffer: bytearray = bytearray(), endianness: Endianess = Endianess.LITTLE):
+    def __init__(self, buffer: bytearray = bytearray(), endianess: consts.Endianess = consts.Endianess.LITTLE):
         self._buffer = buffer
-        self._endianess = endianness
+        self._endianess: consts.Endianess = endianess
 
     # methods
     def read_short(self, signage: consts.SignType) -> short:
@@ -41,7 +41,7 @@ class ByteBuffer(object):
     def _unpack(self, datatype: consts.DataType, signage: consts.SignType) -> typing.Type[T]:
         data = self.read_bytes(datatype.num_bytes)
         print(data)
-        prefix = '<' if self.endianess == Endianess.LITTLE else '>'
+        prefix = '<' if self.endianess == consts.Endianess.LITTLE else '>'
         withSignage = datatype.fmt_signed if signage.SIGNED else datatype.fmt_unsigned
         (out,) = struct.unpack(f"{prefix}{withSignage}",
                               bytes(data))
@@ -58,7 +58,7 @@ class ByteBuffer(object):
 
     @endianess.setter
     def endianess(self, value) -> None:
-        if not value in Endianess:
+        if not value in consts.Endianess:
             raise ValueError("Invalid endianess provided")
 
         self._endianess = value

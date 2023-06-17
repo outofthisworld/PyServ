@@ -75,12 +75,12 @@ class Server(object):
 
     async def _handle_connection(self, reader, writer) -> None:
         """Establish a connection and listen to it"""
-        client = Client(reader=reader, writer=writer)
+        client = net.client.Client(reader=reader, writer=writer)
         self.clients.append(client)
         client.listen()
 
     # properties
     @property
-    def clients() -> typing.List[Client]:
+    def clients() -> typing.List[net.client.Client]:
         """Get the list of clients connected to the server"""
         return [*self.clients]
