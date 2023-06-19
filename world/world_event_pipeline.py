@@ -16,15 +16,14 @@ class WorldEventPipeline:
         client.event_emitter.subscribe(
             'packet', self._queue_world_event)
 
-    def _queue_world_event(self, packet):
-        self._event_queue.put(packet) #make this into a task
+    def _queue_world_event(self, event):
+        self._event_queue.put(event) #make this into a task
 
     def poll(self):
         while self._event_queue.is_not_empty:
             event = self._event_queue
-            Packet = event.packet
-            Packet(
+            Packet = event.Packet(
                 world = self._world
                 client = event.client
                 buffer = event.buffer
-            ).process()
+            )()
