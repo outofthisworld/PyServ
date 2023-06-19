@@ -19,7 +19,7 @@ class WorldEventPipeline:
     def _queue_world_event(self, packet):
         self._event_queue.put(packet) #make this into a task
 
-    def poll():
+    def poll(self):
         while self._event_queue.is_not_empty:
             event = self._event_queue
             Packet = event.packet
