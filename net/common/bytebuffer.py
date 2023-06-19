@@ -74,11 +74,11 @@ class ByteBuffer(object):
     def __len__(self):
         return len(self.buffer)
 
-    def __get_item__(self, i):
-        return self.buffer[i]
+    def __get_item__(self, *args, **kwargs):
+        return self.buffer.__get_item__(*args, **kwargs)
     
     def __iter__(self):
-        return self.buffer
+        return iter(self.buffer)
 
     # private methods
     def _unpack(self, datatype: consts.DataType, signage: consts.SignType) -> typing.Type[T]:
