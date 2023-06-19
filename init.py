@@ -1,14 +1,17 @@
 import net.server as NetworkServer
-import asyncio
-import ctypes
-import inspect
-from net.packets import incoming_packets
+from world import World
+
+
+
 
 async def boot():
-    await NetworkServer.Server().start()  
+    server =  NetworkServer.Server()
+    await server.start()  
+
+    world = World()
+
+    WorldEventPipeline(server=server, world=World()).process()
+    
     
 # asyncio.run(boot())
 
-
-for k,v in incoming_packets.items():
-    print(k,v)

@@ -1,14 +1,12 @@
 import threading
-import socket
 import contextlib
-import struct
 import asyncio
 import typing
-import enum
 import net.client
+from events import EventEmitter
 
 class Server(object):
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: dict):
         """Set up server"""
 
         # settings
@@ -19,6 +17,7 @@ class Server(object):
         self._server: asyncio.events.AbstractServer = None
         self._thread: threading.Thread = None
         self._accepting_connections: bool = False
+        self._event_emitter: EventEmitter = EventEmitter()
 
         # private but exposed publicly
         self._clients: list = []
@@ -30,8 +29,8 @@ class Server(object):
         if self._accepting_connections:
             return False
 
-        self._accepting_connections = True
-        self._thread = threading.Thread(target=self._start)
+        self._accepting_connections: bool = True
+        self._thread: threading.Thread = threading.Thread(target=self._start)
         self._thread.start()
         return True
 
@@ -43,7 +42,7 @@ class Server(object):
         await self.clean_up()
         return True
 
-    async def clean_up() -> None:
+    async def clean_up(self) -> None:
         """Perform clean up tasks"""
         if self._server is not None and self._server.is_serving():
             self._server.close()
@@ -52,6 +51,7 @@ class Server(object):
         self._thread = None
         self._server = None
         self._accepting_connections = False
+        self._clients = []
 
     # dunder methods
     def __del__(self) -> None:
@@ -61,7 +61,7 @@ class Server(object):
     # private methods
     async def _start(self) -> None:
         """Start listening"""
-        async with _bind() as server:
+        async with self._bind() as server:
             await server.serve_forever()
 
     @contextlib.asynccontextmanager
@@ -73,14 +73,22 @@ class Server(object):
         finally:
             await self.clean_up()  # Clean up after
 
-    async def _handle_connection(self, reader, writer) -> None:
+    async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         """Establish a connection and listen to it"""
-        client = net.client.Client(reader=reader, writer=writer)
-        self.clients.append(client)
+        self.clients.append(net.client.Client(reader=reader, writer=writer))
+        
+        client = self.clients[len(self.clients)-1]
+
         client.listen()
+
+        self._event_emitter.emit('connect', client)
 
     # properties
     @property
-    def clients() -> typing.List[net.client.Client]:
+    def clients(self) -> typing.List[net.client.Client]:
         """Get the list of clients connected to the server"""
         return [*self.clients]
+
+    @property
+    def event_emitter(self) -> EventEmitter:
+        return self._event_emitter
