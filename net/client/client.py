@@ -45,29 +45,26 @@ class Client():
         """
             Processes incoming data from the StreamReader
         """
-        reader, writer = self.reader, self.writer
-
-        buffer: commons.ByteBuffer = commons.ByteBuffer()
-
         while self._listening:
-            buffer.add_bytes(await reader.recv(self.IN_BUF_THRESHOLD))
+            self._buffer.add_bytes(await self.reader.recv(self.IN_BUF_THRESHOLD))
 
-            if (len(buffer) < 4):
+            if (len(self._buffer) < 4):
                 continue
 
-            id = buffer.read_int(commons.SignType.UNSIGNED)
-            packet = incoming_packets.get(id)
+            packet_id = self._buffer.read_int(commons.SignType.UNSIGNED)
+            packet = incoming_packets.get(packet_id)
 
             if packet is None:
-                print(f"Unhandled packet {id}")
-                buffer.clear()
+                print(f"Unhandled packet {packet_id}")
+                self._buffer.clear()
                 continue
 
-            if (len(buffer) < packet.size):
+            if (len(self._buffer) < packet.size):
+                self._buffer.rewind()
                 continue
 
-            self._eventemitter.emit('packet', packet())
-            buffer.clear()
+            self._eventemitter.emit('packet', packet(self, self._buffer.chunk(packet.size)))
+            
 
     # properties
 
