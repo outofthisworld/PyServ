@@ -21,8 +21,8 @@ class WorldEventPipeline:
 
     def poll(self):
         while self._event_queue.is_not_empty:
-            event = self._event_queue
-            Packet = event.Packet(
+            event = self._event_queue.get(False)
+            event.Packet(
                 world = self._world
                 client = event.client
                 buffer = event.buffer
