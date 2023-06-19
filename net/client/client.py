@@ -3,9 +3,13 @@ import asyncio as aio
 import net.common as commons
 
 from events import EventEmitter
-from packets import incoming_packets, packet
+from net.packets import incoming_packets
 
-class Client(object):
+
+class Client():
+    """
+        Client
+    """
     IN_BUF_THRESHOLD = 1024
 
     def __init__(self, **kwargs):
@@ -20,10 +24,16 @@ class Client(object):
         self._eventemitter = EventEmitter()
 
     # methods
-    def stop() -> None:
+    def stop(self) -> None:
+        """
+            Stops listening to the StreamReader
+        """
         self._listening = False
 
     async def listen(self) -> types.Optional[aio.Task[None]]:
+        """
+            Begins listening and reading data from the StreamReader
+        """
         if self._listening:
             return None
 
@@ -32,28 +42,52 @@ class Client(object):
 
     # private methods
     async def _read_socket(self) -> None:
+        """
+            Processes incoming data from the StreamReader
+        """
         reader, writer = self.reader, self.writer
+
+        buffer: commons.ByteBuffer = commons.ByteBuffer()
+
         while self._listening:
-            data = await reader.recv(self.IN_BUF_THRESHOLD)
-            self.buffer.add_bytes(data)
-            id = self.buffer.read_int(SignType.UNSIGNED)
-            if (Packet := incoming_packets.get(id)) is not None:
-                self._eventemitter.emit('packet', Packet())
+            buffer.add_bytes(await reader.recv(self.IN_BUF_THRESHOLD))
+
+            if (len(buffer) < 4):
+                continue
+
+            id = buffer.read_int(commons.SignType.UNSIGNED)
+            packet = incoming_packets.get(id)
+
+            if packet is None:
+                print(f"Unhandled packet {id}")
+                buffer.clear()
+                continue
+
+            if (len(buffer) < packet.size):
+                continue
+
+            self._eventemitter.emit('packet', packet())
+            buffer.clear()
 
     # properties
 
     @property
-    def reader() -> aio.StreamReader:
+    def reader(self) -> aio.StreamReader:
+        """
+            Returns the StreamReader
+        """
         return self._reader
 
     @property
-    def writer() -> aio.StreamWriter:
+    def writer(self) -> aio.StreamWriter:
+        """
+            Returns the StreamWriter
+        """
         return self._writer
 
     @property
-    def buffer() -> commons.ByteBuffer:
-        return self._buffer
-
-    @property
-    def events() -> EventEmitter:
+    def events(self) -> EventEmitter:
+        """
+            Returns the EventEmitter
+        """
         return self._eventemitter
