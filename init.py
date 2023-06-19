@@ -5,13 +5,8 @@ from world import World
 
 
 async def boot():
-    server =  NetworkServer.Server()
-    await server.start()  
-
-    world = World()
-
-    WorldEventPipeline(server=server, world=World()).process()
-    
+    (serv = await NetworkServer.Server()).start()
+    World().event_pipeline.listen(serv.events)
     
 # asyncio.run(boot())
 

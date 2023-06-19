@@ -90,5 +90,5 @@ class Server(object):
         return [*self.clients]
 
     @property
-    def event_emitter(self) -> EventEmitter:
+    def events(self) -> EventEmitter:
         return self._event_emitter
