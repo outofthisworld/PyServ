@@ -8,6 +8,9 @@ from . import Loader, PyModuleLoader
 from events import EventEmitter
 
 
+PY_FILE_EXTENSION = '.py'
+PY_INIT_FILE = '__init__'
+
 class PluginLoader(Loader):
     """
         PluginLoader
@@ -22,9 +25,12 @@ class PluginLoader(Loader):
         """
             Loads plugins
         """
-        (plugin_dir,) = args
-        self._plugins += [await self._module_loader.load(
-            os.path.join(plugin_dir, file), file[:-3]) for file in os.listdir(plugin_dir) if file.endswith('.py') and not file.startswith('__init__')]
+        plugin_dir, = args
+        self._plugins.extend(await self._module_loader.load(
+            os.path.join(plugin_dir, file), file[:-len(PY_FILE_EXTENSION)]) 
+            for file in os.listdir(plugin_dir) 
+            if file.endswith(PY_FILE_EXTENSION) and not file.startswith(PY_INIT_FILE)
+        )
         return self._plugins
 
     @property
