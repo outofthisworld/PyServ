@@ -14,3 +14,6 @@ class SequenceLoader(Loader, Iterable, Sequence):
     
     def __len__(self):
         return len(self._data)
+    
+    def __contains__(self, item):
+        return item in self._data
