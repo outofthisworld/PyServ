@@ -1,6 +1,5 @@
 import queue
 
-
 class WorldEventQueue:
     def __init__(self, **kwargs):
         self._event_queue = queue.Queue()

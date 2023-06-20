@@ -1,5 +1,5 @@
 import asyncio
-from .world import *
+from world import *
 
 class World:
     def __init__(self):
