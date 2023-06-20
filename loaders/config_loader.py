@@ -9,7 +9,8 @@ class ConfigLoader(Loader):
         ConfigLoader
     """
 
-    def load(self, *args, **kwargs):
+    async def _load(self, *args, **kwargs):
         """
             Load
         """
+        pass
