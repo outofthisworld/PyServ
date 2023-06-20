@@ -1,7 +1,10 @@
 import queue
 
 class WorldTask:
-    def __init__(self, task = None):
+    def __init__(self):
+        self._task = task
+
+    def withTask(task: Callable) -> 'WorldTask':
         self._task = task
 
     def __call__(self) -> None:
@@ -11,10 +14,10 @@ class WorldTask:
         if callable(self._task):
             self._task()
 
-class WorldPacketTask(WorldTask):
-    def __init__(self, packet):
-        super().__init__(packet)
-        
+    @property
+    def task(self, task: Callable) -> 'WorldTask':
+        return self.withTask(task)
+
 
 class WorldEventQueue:
     def __init__(self, **kwargs):
@@ -41,11 +44,12 @@ class WorldNetworkListener():
             'packet', self._queue_world_event)
 
     def _queue_world_event(self, event):
-        self._world.event_queue.put(
-            WorldPacketTask(task=event.Packet(
+        task = WorldTask().withTask(
+            event.Packet(
                 world = self._world
                 client = event.client
                 buffer = event.buffer
-            ))
-        ) 
+            )
+        )
+        self._world.event_queue.put(task) 
             
