@@ -1,6 +1,7 @@
 
 from events import EventEmitter
 from net.client import Client
+from world import WorldTask
 
 class WorldNetworkEventPublisher():
     def __init__(self, **kwargs):
@@ -16,9 +17,9 @@ class WorldNetworkEventPublisher():
         client.event_emitter.subscribe(
             'packet', self._queue_world_event)
 
-    def _queue_world_event(self, event):
-        self._world.event_queue.put(WorldTask().fromCallable(event.Packet(
+    def _queue_world_event(self, client, packet_cls, buffer):
+        self._world.event_queue.put(WorldTask().fromCallable(packet_cls(
             world=self._world,
-            client=event.client,
-            buffer=event.buffer
+            client=client,
+            buffer=buffer
         )))

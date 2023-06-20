@@ -62,8 +62,9 @@ class Client():
             if (len(self._buffer) < packet.size):
                 self._buffer.rewind()
                 continue
-
-            self._eventemitter.emit('packet', packet(self, self._buffer.chunk(packet.size)))
+            
+            client, packet, chunk = self, packet, self._buffer.chunk(packet.size)
+            self._eventemitter.emit('packet', client, packet, chunk)
             
 
     # properties
