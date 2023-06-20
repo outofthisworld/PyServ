@@ -1,5 +1,8 @@
 import net.server as NetworkServer
 from world import World
+from publishers import WorldNetworkEventPublisher
+from loaders import *
+import os
 
 async def boot():
     ## Create the server
@@ -17,4 +20,9 @@ async def boot():
     ).listen(serv.events)
     
 # asyncio.run(boot())
+
+plugin_loader = PluginLoader()
+print('abs path: ' , os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins'))
+plugin_loader.load(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'plugins'))
+print(plugin_loader.plugins)
 

@@ -7,7 +7,7 @@ class WorldNetworkEventPublisher():
         self._world = kwargs.get('world')
         if self._world is None:
             raise ValueError("Missing world arg in WorldNetworkListener")
-    
+
     def listen(self, event_pipeline: EventEmitter):
         event_pipeline.subscribe(
             'client', self._process_client_packets)
@@ -18,8 +18,7 @@ class WorldNetworkEventPublisher():
 
     def _queue_world_event(self, event):
         self._world.event_queue.put(WorldTask().fromCallable(event.Packet(
-                world = self._world
-                client = event.client
-                buffer = event.buffer
+            world=self._world,
+            client=event.client,
+            buffer=event.buffer
         )))
-            
