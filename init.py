@@ -11,7 +11,10 @@ async def boot():
     ## Start the server
     await world.start()
     ## Listen to network events
-    world.world_network_event_pipeline.listen(serv.events)
+
+    WorldNetworkEventPublisher(
+        world=world
+    ).listen(serv.events)
     
 # asyncio.run(boot())
 

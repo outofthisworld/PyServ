@@ -1,2 +1,2 @@
 from .world import *
-from .world_network_event_pipeline import *
+from ..publishers.world_network_event_publisher import *
