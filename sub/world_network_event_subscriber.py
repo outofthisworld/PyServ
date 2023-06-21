@@ -3,7 +3,7 @@ from events import EventEmitter
 from net.client import Client
 from world import WorldTask
 
-class WorldNetworkEventPublisher():
+class WorldNetworkEventSubscriber():
     def __init__(self, **kwargs):
         self._world = kwargs.get('world')
         if self._world is None:

@@ -33,6 +33,14 @@ class PyPluginLoader(SequenceLoader):
             if file.endswith(PY_FILE_EXTENSION) and not file.startswith(PY_INIT_FILE)
         )
         return self._data
+    
+    def boot(self, *args, **kwargs):
+        for module in self:
+           if hasattr(module, 'boot') and callable(module.boot):
+                module.boot(*args, **kwargs)
+                
+    async def bootAsync(self, *args, **kwargs):
+        return self.boot(*args, **kwargs)
 
     @property
     def plugins(self) -> typing.List[types.ModuleType]:
