@@ -1,14 +1,14 @@
 """
     Loader
 """
-import abc
-import typing
+from abc import ABC, abstractmethod
+from typing import TypeVar
 from events import EventEmitter
 
-T = typing.TypeVar('T')
+T = TypeVar('T')
 
 
-class Loader(abc.ABC):
+class Loader(ABC):
     """Loader"""
 
     def __init__(self):
@@ -27,10 +27,9 @@ class Loader(abc.ABC):
         """Load Async"""
         return self._load(*args, **kwargs)
 
-    @abc.abstractmethod
+    @abstractmethod
     def _load(self, *args, **kwargs) -> T:
         """Load"""
-        pass
 
     @property
     def events(self):

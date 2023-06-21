@@ -1,10 +1,12 @@
 import asyncio
-from world import *
+from world import WorldEventQueue
 from loaders.py_plugin_loader import PyPluginLoader
-import config.world
+from config.app import PLUGINS_DIR
 
 
 class World:
+    """World"""
+
     def __init__(self):
         """Init"""
         self._world_event_queue = WorldEventQueue()
@@ -27,9 +29,13 @@ class World:
 
     async def _boot(self):
         """Boot"""
-        plugin_loader = PyPluginLoader()
-        await plugin_loader.load_async(config.world.get_plugin_base_dir())
-        await plugin_loader.boot(self)
+
+        async def load_plugins():
+            plugin_loader = PyPluginLoader()
+            await plugin_loader.load_async(PLUGINS_DIR)
+            await plugin_loader.boot_async(self)
+
+        await asyncio.gather(load_plugins())
 
     @property
     def world_event_queue(self):

@@ -1,4 +1,4 @@
-import typing
+from typing import Callable
 
 class EventEmitter(object):
     """EventEmitter"""
@@ -6,11 +6,11 @@ class EventEmitter(object):
         """Init"""
         self._subscribers = {}
 
-    def subscribe(self, event: str, handler: typing.Callable):
+    def subscribe(self, event: str, handler: Callable):
         """Subcribe"""
         self._subscribers.setdefault(event, []).append(handler)
 
-    def unsubscribe(self, event: str, handler: typing.Callable):
+    def unsubscribe(self, event: str, handler: Callable):
         """Ubsubscribe"""
         if (subscribers := self._subscribers.get(event)) is not None:
             subscribers.remove(handler)

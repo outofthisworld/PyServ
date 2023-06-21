@@ -1,6 +1,6 @@
-import typing as types
-import asyncio as aio
-import net.common as commons
+from typing import Optional
+from asyncio import StreamReader, StreamWriter, Task, create_task
+from net.common import ByteBuffer, SignType
 
 from events import EventEmitter
 from net.packets import incoming_packets
@@ -12,14 +12,14 @@ class Client():
 
     def __init__(self, **kwargs):
         """Init"""
-        self._reader: aio.StreamReader = kwargs.get('reader')
-        self._writer: aio.StreamWriter = kwargs.get('writer')
+        self._reader: StreamReader = kwargs.get('reader')
+        self._writer: StreamWriter = kwargs.get('writer')
 
         if not self.reader or not self.writer:
             raise ValueError("Keyword arg (reader|writer) is missing")
 
         self._listening: bool = False
-        self._buffer: commons.ByteBuffer = commons.ByteBuffer()
+        self._buffer: ByteBuffer = ByteBuffer()
         self._eventemitter = EventEmitter()
 
     # methods
@@ -27,13 +27,13 @@ class Client():
         """Stop"""
         self._listening = False
 
-    async def listen(self) -> types.Optional[aio.Task[None]]:
+    async def listen(self) -> Optional[Task[None]]:
         """Listen"""
         if self._listening:
             return None
 
         self._listening = True
-        return aio.create_task(self._read_socket)
+        return create_task(self._read_socket)
 
     # private methods
     async def _read_socket(self) -> None:
@@ -44,7 +44,7 @@ class Client():
             if (len(self._buffer) < 4):
                 continue
 
-            packet_id = self._buffer.read_int(commons.SignType.UNSIGNED)
+            packet_id = self._buffer.read_int(SignType.UNSIGNED)
             packet = incoming_packets.get(packet_id)
 
             if packet is None:
@@ -55,20 +55,20 @@ class Client():
             if (len(self._buffer) < packet.size):
                 self._buffer.rewind()
                 continue
-            
-            client, packet, chunk = self, packet, self._buffer.chunk(packet.size)
-            self._eventemitter.emit('packet', client, packet, chunk)
-            
+
+            self._eventemitter.emit(
+                'packet', self, packet, self._buffer.chunk(
+                packet.size))
 
     # properties
 
     @property
-    def reader(self) -> aio.StreamReader:
+    def reader(self) -> StreamReader:
         """StreamReader"""
         return self._reader
 
     @property
-    def writer(self) -> aio.StreamWriter:
+    def writer(self) -> StreamWriter:
         """StreamWriter"""
         return self._writer
 
