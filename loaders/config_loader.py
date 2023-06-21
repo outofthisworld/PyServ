@@ -1,16 +1,9 @@
-"""
-    ConfigLoader
-"""
+"""ConfigLoader"""
 from . import Loader
 
 
 class ConfigLoader(Loader):
-    """
-        ConfigLoader
-    """
+    """ConfigLoader"""
 
     def _load(self, *args, **kwargs):
-        """
-            Load
-        """
-        pass
+        """Load"""

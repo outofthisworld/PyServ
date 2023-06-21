@@ -9,32 +9,30 @@ T = typing.TypeVar('T')
 
 
 class Loader(abc.ABC):
-    """
-        Loader
-    """
+    """Loader"""
+
     def __init__(self):
+        """Init"""
         super().__init__()
         self._event_emitter: EventEmitter = EventEmitter()
-        
+
     def load(self, *args, **kwargs):
-        """
-            Load the thing
-        """
+        """Load"""
         self._event_emitter.emit('loading')
         result = self._load(*args, **kwargs)
         self._event_emitter.emit('loaded', result)
         return result
-        
-    async def loadAsync(self, *args, **kwargs):
-       return self._load(*args, **kwargs)
-        
+
+    async def load_async(self, *args, **kwargs):
+        """Load Async"""
+        return self._load(*args, **kwargs)
+
     @abc.abstractmethod
     def _load(self, *args, **kwargs) -> T:
-        """
-            Load the thing
-        """
+        """Load"""
         pass
-        
+
     @property
     def events(self):
+        """Events"""
         return self._event_emitter

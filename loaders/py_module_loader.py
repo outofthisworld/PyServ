@@ -1,20 +1,19 @@
-"""
-    ModuleLoader
-"""
-import os
+"""PyModuleLoader"""
 import importlib.util
 from types import ModuleType
 from importlib.machinery import SourceFileLoader
 from . import Loader
 
+
 class PyModuleLoader(Loader):
-    """
-        ModuleLoader
-    """
+    """PyModuleLoader"""
+
     def _load(self, script_path: str, module_name: str) -> ModuleType:
+        """Load"""
+
         if not script_path.endswith('.py'):
             raise ValueError("Invalid script path, must end with .py")
-        
+
         spec = importlib.util.spec_from_file_location(
             module_name,
             loader=SourceFileLoader(module_name, script_path),

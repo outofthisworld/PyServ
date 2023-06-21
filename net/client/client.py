@@ -7,12 +7,11 @@ from net.packets import incoming_packets
 
 
 class Client():
-    """
-        Client
-    """
+    """Client"""
     IN_BUF_THRESHOLD = 1024
 
     def __init__(self, **kwargs):
+        """Init"""
         self._reader: aio.StreamReader = kwargs.get('reader')
         self._writer: aio.StreamWriter = kwargs.get('writer')
 
@@ -25,15 +24,11 @@ class Client():
 
     # methods
     def stop(self) -> None:
-        """
-            Stops listening to the StreamReader
-        """
+        """Stop"""
         self._listening = False
 
     async def listen(self) -> types.Optional[aio.Task[None]]:
-        """
-            Begins listening and reading data from the StreamReader
-        """
+        """Listen"""
         if self._listening:
             return None
 
@@ -42,9 +37,7 @@ class Client():
 
     # private methods
     async def _read_socket(self) -> None:
-        """
-            Processes incoming data from the StreamReader
-        """
+        """Read Socket"""
         while self._listening:
             self._buffer.add_bytes(await self.reader.recv(self.IN_BUF_THRESHOLD))
 
@@ -71,21 +64,15 @@ class Client():
 
     @property
     def reader(self) -> aio.StreamReader:
-        """
-            Returns the StreamReader
-        """
+        """StreamReader"""
         return self._reader
 
     @property
     def writer(self) -> aio.StreamWriter:
-        """
-            Returns the StreamWriter
-        """
+        """StreamWriter"""
         return self._writer
 
     @property
     def events(self) -> EventEmitter:
-        """
-            Returns the EventEmitter
-        """
+        """EventEmitter"""
         return self._eventemitter
