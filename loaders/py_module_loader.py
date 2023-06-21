@@ -11,7 +11,7 @@ class PyModuleLoader(Loader):
     """
         ModuleLoader
     """
-    async def _load(self, script_path: str, module_name: str) -> ModuleType:
+    def _load(self, script_path: str, module_name: str) -> ModuleType:
         if not script_path.endswith('.py'):
             raise ValueError("Invalid script path, must end with .py")
         

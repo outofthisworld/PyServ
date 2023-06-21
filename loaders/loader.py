@@ -16,17 +16,20 @@ class Loader(abc.ABC):
         super().__init__()
         self._event_emitter: EventEmitter = EventEmitter()
         
-    async def load(self, *args, **kwargs):
+    def load(self, *args, **kwargs):
         """
             Load the thing
         """
         self._event_emitter.emit('loading')
-        result = await self._load(*args, **kwargs)
+        result = self._load(*args, **kwargs)
         self._event_emitter.emit('loaded', result)
         return result
         
+    async def loadAsync(self, *args, **kwargs):
+       return self._load(*args, **kwargs)
+        
     @abc.abstractmethod
-    async def _load(self, *args, **kwargs) -> T:
+    def _load(self, *args, **kwargs) -> T:
         """
             Load the thing
         """
