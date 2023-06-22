@@ -1,8 +1,10 @@
 from os import path
+from .parser import parser
 
 ################################
-# System wide vars
+# App vars
 ################################
 
 ROOT_DIR = path.join(path.dirname(path.abspath(__file__)))
-PLUGINS_DIR = path.join(ROOT_DIR, 'plugins')
+PLUGINS_DIR = path.join(ROOT_DIR, parser.get(
+    'app', 'plugin_folder', fallback='plugins'))
