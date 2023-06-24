@@ -3,14 +3,16 @@ import os
 import net.server 
 import world
 import sub
-import inspect
-import functools
+import loaders 
 
 async def boot():
     ## Create the server
+    print("Starting server...")
     serv =  net.server.Server()
     await serv.start()
+    
 
+    print("Creating game world")
     ## Create the world
     game_world = world.World()
     ## Start the server
@@ -21,4 +23,4 @@ async def boot():
         world=world
     ).listen(serv.events)
     
-# asyncio.run(boot())
+asyncio.run(boot())

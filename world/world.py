@@ -18,7 +18,7 @@ class World:
 
     async def start(self) -> asyncio.Task[None]:
         """Start"""
-        return asyncio.create_task(self._start)
+        return asyncio.create_task(self._start())
 
     async def _start(self):
         """Start"""

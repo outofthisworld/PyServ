@@ -33,14 +33,21 @@ class Client():
             return None
 
         self._listening = True
-        return create_task(self._read_socket)
+        return create_task(self._read_socket())
 
     # private methods
     async def _read_socket(self) -> None:
         """Read Socket"""
         while self._listening:
-            self._buffer.add_bytes(await self.reader.recv(self.IN_BUF_THRESHOLD))
-
+            data = await self.reader.read(self.IN_BUF_THRESHOLD)
+          
+            if(len(data) == 0):
+                continue
+            
+            print('recieved data from client ', data)
+            
+            self._buffer.add_bytes(data)
+            
             if (len(self._buffer) < 4):
                 continue
 

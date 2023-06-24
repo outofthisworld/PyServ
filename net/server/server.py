@@ -14,10 +14,11 @@ class Server(object):
         self.port: int = kwargs.get('port', 5005)
 
         # private
-        self._server: asyncio.events.AbstractServer = None
-        self._thread: threading.Thread = None
+        self._server: typing.Optional[asyncio.events.AbstractServer] = None
+        self._thread: typing.Optional[threading.Thread] = None
         self._accepting_connections: bool = False
         self._event_emitter: EventEmitter = EventEmitter()
+        self._event_loop: typing.Optional[asyncio.BaseEventLoop] = None
 
         # private but exposed publicly
         self._clients: list = []
@@ -39,27 +40,48 @@ class Server(object):
         if not self._accepting_connections:
             return False
 
-        await self.clean_up()
+        self._clean_up()
         return True
 
-    async def clean_up(self) -> None:
+    def _clean_up(self) -> None:
         """Perform clean up tasks"""
-        if self._server is not None and self._server.is_serving():
-            self._server.close()
-            await self._server.wait_closed()
+        try:
+            if self._server is not None and self._server.is_serving():
+                self._server.close()
+                
+            if self._event_loop is not None and self._event_loop.is_running():
+                self._event_loop.stop()
+                
+            if self._event_loop is not None and not self._event_loop.is_closed():
+                self._event_loop.close()
 
-        self._thread = None
-        self._server = None
-        self._accepting_connections = False
-        self._clients = []
+            self._event_loop = None
+            self._thread = None
+            self._server = None
+            self._accepting_connections = False
+            self._clients = []
+            self._event_emitter = EventEmitter()
+        except Exception as e:
+            print(e)
 
     # dunder methods
     def __del__(self) -> None:
         """Called when the object is destructed or destoryed. Clean up the server"""
-        asyncio.create_task(self.clean_up())
+        self._clean_up()
 
     # private methods
-    async def _start(self) -> None:
+    def _start(self) -> None:
+        try:
+            if self._event_loop is None:
+                self._event_loop = asyncio.new_event_loop()
+            
+            asyncio.set_event_loop(self._event_loop)
+            self._event_loop.run_until_complete(self._bind_server())
+        finally:
+            loop.stop()
+            loop.close()
+  
+    async def _bind_server(self) ->None:
         """Start listening"""
         async with self._bind() as server:
             await server.serve_forever()
@@ -71,15 +93,19 @@ class Server(object):
             self._server = await asyncio.start_server(self._handle_connection, self.host, self.port)
             yield self._server
         finally:
-            await self.clean_up()  # Clean up after
+            self._clean_up()  # Clean up after
 
     async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         """Establish a connection and listen to it"""
-        self.clients.append(net.client.Client(reader=reader, writer=writer))
         
-        client = self.clients[len(self.clients)-1]
+        print("accepting connection")
+        
+        self._clients.append(net.client.Client(reader=reader, writer=writer))
+        
+        client = self._clients[len(self._clients)-1]
 
-        client.listen()
+        print("listening to client")
+        await client.listen()
 
         self._event_emitter.emit('connect', client)
 
@@ -87,7 +113,7 @@ class Server(object):
     @property
     def clients(self) -> typing.List[net.client.Client]:
         """Get the list of clients connected to the server"""
-        return [*self.clients]
+        return [*self._clients]
 
     @property
     def events(self) -> EventEmitter:
