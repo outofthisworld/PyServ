@@ -1,8 +1,6 @@
 """ConfigLoader"""
-from os import path
 from configparser import ConfigParser
-from config.app import ROOT_DIR
-from . import Loader
+from .loader import Loader
 
 class ConfigLoader(Loader):
     """ConfigLoader"""
@@ -10,6 +8,6 @@ class ConfigLoader(Loader):
     def _load(self, *args, **kwargs) -> ConfigParser:
         """Load"""
         config = ConfigParser()
-
-        config.read(path.join(ROOT_DIR, 'config', 'config.ini'))
+        path, = args
+        config.read(path)
         return config

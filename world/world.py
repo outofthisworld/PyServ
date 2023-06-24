@@ -1,5 +1,5 @@
 import asyncio
-from world import WorldEventQueue
+from .world_event_queue import WorldEventQueue
 from loaders.py_plugin_loader import PyPluginLoader
 from config.app import PLUGINS_DIR
 

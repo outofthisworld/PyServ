@@ -2,7 +2,7 @@
 from importlib.util import spec_from_file_location, module_from_spec
 from importlib.machinery import SourceFileLoader
 from types import ModuleType
-from . import Loader
+from .loader import Loader
 
 
 class PyModuleLoader(Loader):

@@ -2,7 +2,8 @@
 from os import listdir, path
 from types import ModuleType
 from typing import List
-from . import SequenceLoader, PyModuleLoader
+from .sequence_loader import SequenceLoader
+from .py_module_loader import PyModuleLoader
 
 
 PY_FILE_EXTENSION = '.py'

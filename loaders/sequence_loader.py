@@ -1,5 +1,5 @@
 from collections.abc import Iterable, Sequence
-from . import Loader
+from .loader import Loader
 
 class SequenceLoader(Sequence, Iterable, Loader):
     """Sequence Loader"""
