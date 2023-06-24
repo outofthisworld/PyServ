@@ -44,8 +44,6 @@ class Client():
             if(len(data) == 0):
                 continue
             
-            print('recieved data from client ', data)
-            
             self._buffer.add_bytes(data)
             
             if (len(self._buffer) < 4):
@@ -55,7 +53,6 @@ class Client():
             packet = incoming_packets.get(packet_id)
 
             if packet is None:
-                print(f"Unhandled packet {packet_id}")
                 self._buffer.clear()
                 continue
 

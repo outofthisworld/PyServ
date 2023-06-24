@@ -98,13 +98,10 @@ class Server(object):
     async def _handle_connection(self, reader: asyncio.StreamReader, writer: asyncio.StreamWriter) -> None:
         """Establish a connection and listen to it"""
         
-        print("accepting connection")
-        
         self._clients.append(net.client.Client(reader=reader, writer=writer))
         
         client = self._clients[len(self._clients)-1]
 
-        print("listening to client")
         await client.listen()
 
         self._event_emitter.emit('connect', client)
