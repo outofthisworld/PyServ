@@ -1,2 +1,2 @@
 from .eventemitter import *
-from .eventemitter import *
+from .eventhandler import *
