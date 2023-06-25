@@ -44,7 +44,6 @@ class IntervalWorldTask(WorldTask):
     def fromCallable(cls, task: typing.Callable, **kwargs) -> 'IntervalWorldTask':
         interval_task = super().fromCallable(task)
         interval_task.__init__(**kwargs)
-        print(interval_task)
         return interval_task
 
     def poll(self) -> None:
@@ -55,7 +54,6 @@ class IntervalWorldTask(WorldTask):
             self._attempts = self._attempts - 1
             return
 
-        print('polling')
         super().poll()
         self._attempts = self._delay
 
