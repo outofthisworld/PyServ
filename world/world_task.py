@@ -39,12 +39,16 @@ class IntervalWorldTask(WorldTask):
         
         return False
     
-    def poll(self) -> None:      
-        if self._attempts <= 0:
-            super().poll()
-            self._attempts = self._delay
-        else:
+    def poll(self) -> None: 
+        if self._times is not None and self._times <= 0:
+            return
+        
+        if self._attempts > 0:
             self._attempts = self._attempts - 1
+            return
+            
+        super().poll()
+        self._attempts = self._delay
         
         if self._times is not None:
             self._times = self._times - 1
