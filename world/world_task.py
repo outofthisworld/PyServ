@@ -1,4 +1,5 @@
 import typing
+from typing import Optional
 
 class WorldTask:
     def __init__(self):
@@ -9,9 +10,6 @@ class WorldTask:
 
     def __call__(self) -> None:
         self.poll()
-        
-    def condition(self) -> bool:
-        return True
     
     def poll(self) -> None:
         if callable(self._task):
@@ -25,20 +23,11 @@ class WorldTask:
         self.fromCallable(task)
         
 class IntervalWorldTask(WorldTask):
-    def __init__(self, delay:int = 0, times:Optional[int] = None):
-        self._delay = min(delay, 0)
+    def __init__(self, delay:int = 0, initialDelay=False, times:Optional[int] = None):
+        self._delay = max(delay, 0)
         self._times = times
-        self._attempts = self._delay
-    
-    def condition(self) -> bool:
-        if self._times is None:
-            return True 
-        
-        if self._times >= 0:
-            return True
-        
-        return False
-    
+        self._attempts = 0 if not initialDelay else self._delay
+
     def poll(self) -> None: 
         if self._times is not None and self._times <= 0:
             return
