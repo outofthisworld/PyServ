@@ -23,6 +23,10 @@ class WorldTask:
 
     def done(self) -> bool:
         return False
+    
+    def __str__(self):
+        class_name = type(self).__name__
+        return f"{class_name}({vars(self)})"
 
     @property
     def task(self, task: typing.Callable) -> None:
@@ -36,13 +40,11 @@ class IntervalWorldTask(WorldTask):
         self._times = times
         self._attempts = 0 if not initialDelay else self._delay
 
-    def __str__(self):
-        return f"IntervalWorldTask(delay={self._delay},times={self._times},attempts={self._attempts})"
-
     @classmethod
     def fromCallable(cls, task: typing.Callable, **kwargs) -> 'IntervalWorldTask':
         interval_task = super().fromCallable(task)
         interval_task.__init__(**kwargs)
+        print(interval_task)
         return interval_task
 
     def poll(self) -> None:
@@ -53,6 +55,7 @@ class IntervalWorldTask(WorldTask):
             self._attempts = self._attempts - 1
             return
 
+        print('polling')
         super().poll()
         self._attempts = self._delay
 
