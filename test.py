@@ -1,8 +1,8 @@
 from world import IntervalWorldTask
 from time import sleep
 
-i = IntervalWorldTask(2, 5)
-i.fromCallable(lambda: print('poll'))
+
+i = IntervalWorldTask.fromCallable(lambda: print('poll'), delay=0)
 
 while True:
     if not i.done():

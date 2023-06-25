@@ -1,7 +1,6 @@
 import typing
 from typing import Optional
 
-
 class WorldTask:
     def __init__(self):
         self._task = None
@@ -10,10 +9,10 @@ class WorldTask:
     def fromCallable(cls, task: typing.Callable) -> 'WorldTask':
         if not callable(task):
             raise ValueError("Must be a callable task")
-
-        task = cls()
-        task._task = task
-        return task
+        
+        instance = cls()
+        instance._task = task
+        return instance
 
     def __call__(self) -> None:
         self.poll()
@@ -42,15 +41,8 @@ class IntervalWorldTask(WorldTask):
 
     @classmethod
     def fromCallable(cls, task: typing.Callable, **kwargs) -> 'IntervalWorldTask':
-        interval_task = IntervalWorldTask(kwargs.get('delay', 0), kwargs.get(
-            'initialDelay', False), kwargs.get('times'))
-
-        if not callable(task):
-            raise ValueError("Invalid task, must be callable")
-
-        # Set the task
-        interval_task._task = task
-
+        interval_task = super().fromCallable(task)
+        interval_task.__init__(**kwargs)
         return interval_task
 
     def poll(self) -> None:
